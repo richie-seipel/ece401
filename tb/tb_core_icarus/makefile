@@ -11,7 +11,6 @@ ifeq ($(shell which iverilog),)
   ${error iverilog missing from PATH - Icarus Verilog required}
 endif
 
-
 ###############################################################################
 # Variables: Defaults
 ###############################################################################
@@ -32,7 +31,7 @@ VFLAGS      += -DTRACE=$(TRACE)
 VFLAGS      += -Dverilog_sim
 
 ###############################################################################
-# Variables: Lists of objects, source and deps
+# Build output directory
 ###############################################################################
 BUILD_DIR      ?= build/
 
@@ -47,16 +46,20 @@ $(BUILD_DIR):
 $(BUILD_DIR)/tcm.bin: $(ELF_FILE) | $(BUILD_DIR)
 	$(OBJCOPY) $< -O binary $@
 
+tcm.hex: $(BUILD_DIR)/tcm.bin
+	@echo "# Converting BIN to HEX for Verilog memory"
+	hexdump -v -e '1/4 "%08x\n"' $< > tcm.hex
+
 $(BUILD_DIR)/$(EXE): $(SRC_V) | $(BUILD_DIR)
 	@echo "# Compiling verilog"
 	iverilog $(VFLAGS) -o $@ $(SRC_V)
 
-run: $(BUILD_DIR)/$(EXE) $(BUILD_DIR)/tcm.bin
+run: $(BUILD_DIR)/$(EXE) tcm.hex
 	vvp $(BUILD_DIR)/$(EXE) -vcd
 
 view:
-	gtkwave waveform.vcd gtksettings.sav  
+	gtkwave wave.vcd gtksettings.sav
 
 clean:
-	rm -rf $(BUILD_DIR) *.vcd
+	rm -rf $(BUILD_DIR) *.vcd tcm.hex
 
