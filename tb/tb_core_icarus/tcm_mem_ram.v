@@ -4,12 +4,12 @@ module tcm_mem_ram
     // Inputs
      input           clk0_i
     ,input           rst0_i
-    ,input  [ 13:0]  addr0_i
+    ,input  [ 15:0]  addr0_i
     ,input  [ 31:0]  data0_i
     ,input  [  3:0]  wr0_i
     ,input           clk1_i
     ,input           rst1_i
-    ,input  [ 13:0]  addr1_i
+    ,input  [ 15:0]  addr1_i
     ,input  [ 31:0]  data1_i
     ,input  [  3:0]  wr1_i
 
@@ -25,7 +25,7 @@ module tcm_mem_ram
 // Mode: Read First
 //-----------------------------------------------------------------
 /* verilator lint_off MULTIDRIVEN */
-reg [31:0]   ram [16383:0] /*verilator public*/;
+reg [31:0]   ram [65535:0] /*verilator public*/;
 /* verilator lint_on MULTIDRIVEN */
 
 reg [31:0] ram_read0_q;

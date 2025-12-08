@@ -41,14 +41,14 @@ u_ram
     // Instruction fetch
      .clk0_i(clk_i)
     ,.rst0_i(rst_i)
-    ,.addr0_i(mem_i_pc_i[15:2])
+    ,.addr0_i(mem_i_pc_i[17:2])
     ,.data0_i(32'b0)
     ,.wr0_i(4'b0)
 
     // External access / Data access
     ,.clk1_i(clk_i)
     ,.rst1_i(rst_i)
-    ,.addr1_i(mem_d_addr_i[15:2])
+    ,.addr1_i(mem_d_addr_i[17:2])
     ,.data1_i(mem_d_data_wr_i)
     ,.wr1_i(mem_d_wr_i)
 

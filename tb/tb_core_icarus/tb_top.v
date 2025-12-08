@@ -3,7 +3,7 @@ module tb_top;
 reg clk;
 reg rst;
 
-reg [7:0] mem[65535:0];
+reg [7:0] mem[262143:0];
 integer i;
 integer f;
 
@@ -24,12 +24,12 @@ begin
     rst = 0;
 
     // Load TCM memory
-    for (i=0;i<65535;i=i+1)
+    for (i=0;i<262143;i=i+1)
         mem[i] = 0;
 
     f = $fopenr("./build/tcm.bin");
     i = $fread(mem, f);
-    for (i=0;i<65535;i=i+1)
+    for (i=0;i<262143;i=i+1)
         u_mem.write(i, mem[i]);
 end
 
@@ -64,7 +64,8 @@ wire          mem_d_ack_w;
 wire          mem_d_error_w;
 wire [ 10:0]  mem_d_resp_tag_w;
 
-riscv_core
+riscv_core 
+#(.SUPPORT_CSR(1))
 u_dut
 //-----------------------------------------------------------------
 // Ports

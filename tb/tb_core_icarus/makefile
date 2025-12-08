@@ -4,9 +4,9 @@
 ELF_FILE ?= test.elf
 
 OBJCOPY ?= riscv32-unknown-elf-objcopy
-ifeq ($(shell which $(OBJCOPY)),)
-  ${error $(OBJCOPY) missing from PATH}
-endif
+#ifeq ($(shell which $(OBJCOPY)),)
+#  ${error $(OBJCOPY) missing from PATH}
+#endif
 ifeq ($(shell which iverilog),)
   ${error iverilog missing from PATH - Icarus Verilog required}
 endif
@@ -34,7 +34,7 @@ VFLAGS      += -Dverilog_sim
 ###############################################################################
 # Variables: Lists of objects, source and deps
 ###############################################################################
-BUILD_DIR      ?= build/
+BUILD_DIR      ?= ./build
 
 ###############################################################################
 # Rules
