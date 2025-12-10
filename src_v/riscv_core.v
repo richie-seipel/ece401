@@ -10,7 +10,7 @@ module riscv_core
 #(
      parameter SUPPORT_MUL      = 1
     ,parameter SUPPORT_DIV      = 1
-    ,parameter SUPPORT_CSR      = 1      // unused in this simple core
+    ,parameter SUPPORT_CSR      = 1
     ,parameter SUPPORT_TRAP_LSU_ALIGN = 0
     ,parameter SUPPORT_MTVEC    = 0
     ,parameter SUPPORT_MTVAL    = 0
@@ -207,7 +207,7 @@ end
 always @(posedge clk_i)
 begin
     if (rst_i)
-        pc_q <= 32'b0;
+        pc_q <= 32'b0; // go to 800000
     else if (!stall_if)
         pc_q <= pc_next_r;
 end
