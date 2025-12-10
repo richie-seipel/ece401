@@ -82,24 +82,24 @@ end
 riscv_core u_dut (
     .clk_i(clk),
     .rst_i(rst),
-
     .intr_i(1'b0),
+    .reset_vector_i(32'h80000000),
 
-    .dbg_stall_i(1'b0),
-    .dbg_stall_o(),
+//    .dbg_stall_i(1'b0),
+//    .dbg_stall_o(),
+//
+//   .dbg_reg_addr_i(5'b0),
+//   .dbg_reg_wr_i(1'b0),
+//    .dbg_reg_wdata_i(32'b0),
+//    .dbg_reg_rdata_o(),
 
-    .dbg_reg_addr_i(5'b0),
-    .dbg_reg_wr_i(1'b0),
-    .dbg_reg_wdata_i(32'b0),
-    .dbg_reg_rdata_o(),
-
-    .dbg_pc_wr_i(1'b0),
-    .dbg_pc_wdata_i(32'b0),
-    .dbg_pc_rdata_o(),
-
-    .dbg_step_i(1'b0),
-    .dbg_ebreakm_i(1'b0),
-    .dbg_trap_o(),
+//    .dbg_pc_wr_i(1'b0),
+//    .dbg_pc_wdata_i(32'b0),
+//    .dbg_pc_rdata_o(),
+//
+//    .dbg_step_i(1'b0),
+//    .dbg_ebreakm_i(1'b0),
+//    .dbg_trap_o(),
 
     // Instruction interface
     .mem_i_rd_o(mem_i_rd_w),
@@ -108,9 +108,9 @@ riscv_core u_dut (
     .mem_i_valid_i(mem_i_valid_w),
     .mem_i_inst_i(mem_i_inst_w),
 
-    .mem_i_flush_o(),
-    .mem_i_invalidate_o(),
-    .mem_i_error_i(1'b0),
+    //.mem_i_flush_o(),
+    //.mem_i_invalidate_o(),
+    //.mem_i_error_i(1'b0),
 
     // Data interface
     .mem_d_addr_o(mem_d_addr_w),
@@ -119,21 +119,21 @@ riscv_core u_dut (
     .mem_d_wr_o(mem_d_wr_w),
     .mem_d_data_rd_i(mem_d_data_rd_w),
     .mem_d_accept_i(mem_d_accept_w),
-    .mem_d_ack_i(mem_d_ack_w),
+    .mem_d_ack_i(mem_d_ack_w)
 
-    .mem_d_cacheable_o(),
-    .mem_d_req_tag_o(),
-    .mem_d_invalidate_o(),
-    .mem_d_writeback_o(),
-    .mem_d_flush_o(),
-    .mem_d_error_i(1'b0),
-
-    .mtime_i(64'b0),
-    .mtimecmp_i(64'b0),
-    .timer_irq_o(),
-    .ext_irq_o(),
-
-    .retired_o()
+//    .mem_d_cacheable_o(),
+//    .mem_d_req_tag_o(),
+//    .mem_d_invalidate_o(),
+//    .mem_d_writeback_o(),
+//    .mem_d_flush_o(),
+//    .mem_d_error_i(1'b0),
+//
+//    .mtime_i(64'b0),
+//    .mtimecmp_i(64'b0),
+//    .timer_irq_o(),
+//    .ext_irq_o(),
+//
+//    .retired_o()
 );
 
 

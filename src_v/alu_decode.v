@@ -2,7 +2,10 @@
 
 module alu_decode 
 #(
-    parameter SUPPORT_CSR = 1
+    parameter SUPPORT_CSR = 1,
+    parameter SUPPORT_TRAP_INVALID_OPC = 1,
+    parameter SUPPORT_MUL = 1,
+    parameter SUPPORT_DIV = 1
 )
 //-----------------------------------------------------------------
 // I/O
@@ -16,7 +19,17 @@ module alu_decode
     output reg [31:0] alu_input_a_r, 
     output reg [31:0] alu_input_b_r, 
     output reg [3:0] alu_func_r, 
-    output reg write_rd_r
+    output reg write_rd_r, 
+    output wire inst_mul_i,       
+    output wire inst_mulh_i,  
+    output wire inst_mulhsu_i,
+    output wire inst_mulhu_i,
+    output wire inst_div_i,   
+    output wire inst_divu_i,  
+    output wire inst_rem_i,   
+    output wire inst_remu_i,
+    output reg invalid_inst_i,
+    output wire is_muldiv_i
 );
     
 //-----------------------------------------------------------------
@@ -40,11 +53,26 @@ begin
     imm12_r     = {{20{instruction_w[31]}}, instruction_w[31:20]};
 end
 
-wire inst_csr_w     = SUPPORT_CSR && type_system_w && (func3_w != 3'b000 && func3_w != 3'b100);
 
 wire [2:0] func3_w  = instruction_w[14:12]; // R, I, S
 wire [6:0] func7_w  = instruction_w[31:25]; // R
+
+wire inst_csr_w     = SUPPORT_CSR && type_system_w && (func3_w != 3'b000 && func3_w != 3'b100);
+
+
+wire inst_ecall_w    = SUPPORT_CSR && type_system_w && (instruction_w[31:7] == 25'h000000);
+wire inst_ebreak_w   = SUPPORT_CSR && type_system_w && (instruction_w[31:7] == 25'h002000);
+wire inst_mret_w     = SUPPORT_CSR && type_system_w && (instruction_w[31:7] == 25'h604000);
+
+wire type_rvc_w     = (instruction_w[1:0] != 2'b11);
+
+
 // ALU operations excluding mul/div
+wire mul_inst_w      = SUPPORT_MUL && type_op_w && (func7_w == 7'b0000001) && ~func3_w[2];
+wire div_inst_w      = SUPPORT_DIV && type_op_w && (func7_w == 7'b0000001) &&  func3_w[2];
+wire muldiv_inst_w = mul_inst_w | div_inst_w;
+assign is_muldiv_i = muldiv_inst_w;
+
 wire type_alu_op_w  = (type_op_w && (func7_w == 7'b0000000)) ||
                       (type_op_w && (func7_w == 7'b0100000));
 wire type_load_w    = (instruction_w[6:2] == 5'b00000);
@@ -63,12 +91,17 @@ wire type_miscm_w   = (instruction_w[6:2] == 5'b00011);
 // ALU inputs
 //-----------------------------------------------------------------
 // ALU operation selection
-//reg [3:0]  alu_func_r;
 
-// ALU operands
-//reg [31:0] alu_input_a_r;
-//reg [31:0] alu_input_b_r;
-//reg        write_rd_r;
+assign inst_mul_i      = mul_inst_w && (func3_w == 3'b000); 
+assign inst_mulh_i     = mul_inst_w && (func3_w == 3'b001);
+assign inst_mulhsu_i   = mul_inst_w && (func3_w == 3'b010);
+assign inst_mulhsu_i    = mul_inst_w && (func3_w == 3'b011);
+assign inst_div_i      = div_inst_w && (func3_w == 3'b100);
+assign inst_divu_i     = div_inst_w && (func3_w == 3'b101);
+assign inst_rem_i      = div_inst_w && (func3_w == 3'b110);
+assign inst_remu_i     = div_inst_w && (func3_w == 3'b111);
+wire inst_nop_w      = (type_miscm_w && (func3_w == 3'b000)) | // fence
+                       (type_miscm_w && (func3_w == 3'b001));  // fence.i
 
 always @ *
 begin
@@ -142,6 +175,27 @@ begin
     end
     else if (type_load_w)
         write_rd_r     = 1'b1;
+
+    invalid_inst_i = SUPPORT_TRAP_INVALID_OPC;
+
+    if (   type_load_w
+         | type_opimm_w
+         | type_auipc_w
+         | type_store_w
+         | type_alu_op_w
+         | type_lui_w
+         | type_branch_w
+         | type_jalr_w
+         | type_jal_w
+         | inst_ecall_w 
+         | inst_ebreak_w 
+         | inst_mret_w 
+         | inst_csr_w
+         | inst_nop_w
+         | muldiv_inst_w)
+        invalid_inst_i = SUPPORT_TRAP_INVALID_OPC && type_rvc_w;
+    
+
 end
 
 endmodule
